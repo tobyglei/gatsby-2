@@ -12,7 +12,7 @@ export function createGatsbyProgressOrFallbackToExternalProgressBar(
   const bar = new ProgressBar(
     ` [:bar] :current/:total :elapsed s :percent ${message}`,
     {
-      total: 0,
+      total: 1, // if you set this to 0 then you might get 0/0 errors
       width: 30,
       clear: true,
     }
@@ -25,7 +25,7 @@ export function createGatsbyProgressOrFallbackToExternalProgressBar(
     },
     done() {},
     set total(value) {
-      bar.total = value
+      bar.total = Math.max(value, 1) || 1 // Do not allow 0, negative numbers, or non-numbers.
     },
   }
 }
@@ -56,7 +56,7 @@ export const createOrGetProgressBar = reporter => {
         progressBar.start()
       }
       pendingImagesCounter += imageCount
-      progressBar.total = pendingImagesCounter
+      progressBar.total = Math.max(1, pendingImagesCounter) // 0 will cause 0/0 error
     }
 
     // when we create a progressBar for the second time so when .done() has been called before
